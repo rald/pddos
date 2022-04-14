@@ -43,18 +43,18 @@ static sword sgn(sword x) {
 }
 
 void SetMode(byte mode) {
-  union REGS regs;
+	union REGS regs;
 
-  regs.h.ah = SET_MODE;
-  regs.h.al = mode;
-  int86(VIDEO_INT, &regs, &regs);
+	regs.h.ah = SET_MODE;
+	regs.h.al = mode;
+	int86(VIDEO_INT, &regs, &regs);
 }
 
 void SetPalette(byte *palette,word npalette) {
 	word i;
 
-  outp(PALETTE_INDEX,0);              /* tell the VGA that palette data
-                                         is coming. */
+	outp(PALETTE_INDEX,0);              /* tell the VGA that palette data
+																				 is coming. */
 	for(i=0;i<npalette;i++) {
 		outp(PALETTE_DATA,palette[i*3+0]);
 		outp(PALETTE_DATA,palette[i*3+1]);
@@ -70,10 +70,10 @@ void SetPalette(byte *palette,word npalette) {
 }
 
 void VWait(void) {
-    /* wait until done with vertical retrace */
-    while  ((inp(INPUT_STATUS) & VRETRACE));
-    /* wait until done refreshing */
-    while (!(inp(INPUT_STATUS) & VRETRACE));
+		/* wait until done with vertical retrace */
+		while  ((inp(INPUT_STATUS) & VRETRACE));
+		/* wait until done refreshing */
+		while (!(inp(INPUT_STATUS) & VRETRACE));
 }
 
 void DrawPoint(byte *buf,sword x,sword y,byte color) {
@@ -138,7 +138,7 @@ void FillRect(byte *buf,sword x,sword y,sword w,sword h,byte color) {
 		for(i=x;i<x+w;i++) {
 			DrawPoint(buf,i,j,color);
 		}
-  }
+	}
 }
 
 #endif

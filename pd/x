@@ -1,8 +1,0 @@
-		if(Mouse_IsPressed(LEFT_BUTTON)==1) {
-			btnOK.pressed=1;
-		}
-
-		if(Mouse_IsReleased(LEFT_BUTTON)==1){
-			btnOK.pressed=0;
-		}
-
