@@ -26,12 +26,12 @@ typedef char  sbyte;
 typedef short sword;
 
 byte* vga=(byte*)0xA0000000L;
+word* myclock=(word*)0x0000046C;
 
 void SetMode(byte mode);
 void SetPalette(byte *palette,word npalette);
 void VWait(void);
 
-void DrawPoint(byte *buf,sword x,sword y,byte color);
 void DrawLine(byte *buf,sword x1,sword y1,sword x2,sword y2,byte color);
 void DrawRect(byte *buf,sword x1,sword y1,sword x2,sword y2,byte color);
 void FillRect(byte *buf,sword x1,sword y1,sword x2,sword y2,byte color);
@@ -43,18 +43,17 @@ static sword sgn(sword x) {
 }
 
 void SetMode(byte mode) {
-	union REGS regs;
-
-	regs.h.ah = SET_MODE;
-	regs.h.al = mode;
-	int86(VIDEO_INT, &regs, &regs);
+  union REGS regs;
+  regs.h.ah = SET_MODE;
+  regs.h.al = mode;
+  int86(VIDEO_INT, &regs, &regs);
 }
 
 void SetPalette(byte *palette,word npalette) {
 	word i;
 
-	outp(PALETTE_INDEX,0);              /* tell the VGA that palette data
-																				 is coming. */
+  outp(PALETTE_INDEX,0);              /* tell the VGA that palette data
+                                         is coming. */
 	for(i=0;i<npalette;i++) {
 		outp(PALETTE_DATA,palette[i*3+0]);
 		outp(PALETTE_DATA,palette[i*3+1]);
@@ -70,15 +69,15 @@ void SetPalette(byte *palette,word npalette) {
 }
 
 void VWait(void) {
-		/* wait until done with vertical retrace */
-		while  ((inp(INPUT_STATUS) & VRETRACE));
-		/* wait until done refreshing */
-		while (!(inp(INPUT_STATUS) & VRETRACE));
+    /* wait until done with vertical retrace */
+    while  ((inp(INPUT_STATUS) & VRETRACE));
+    /* wait until done refreshing */
+    while (!(inp(INPUT_STATUS) & VRETRACE));
 }
 
 void DrawPoint(byte *buf,sword x,sword y,byte color) {
 	if(x>=0 && x<SCREEN_WIDTH && y>=0 && y<SCREEN_HEIGHT) {
-		buf[y*SCREEN_WIDTH+x]=color;
+		buf[x+y*SCREEN_WIDTH]=color;
 	}
 }
 
@@ -123,12 +122,12 @@ void DrawLine(byte *buf,sword x1,sword y1,sword x2,sword y2, byte color) {
 void DrawRect(byte *buf,sword x,sword y,sword w,sword h,byte color) {
 	int i,j;
 	for(i=x;i<x+w;i++) {
-		DrawLine(buf,i,y,i,y,color);
-		DrawLine(buf,i,y+h-1,i,y+h-1,color);
+		DrawPoint(buf,i,y,color);
+		DrawPoint(buf,i,y+h-1,color);
 	}
 	for(j=y;j<y+h;j++) {
-		DrawLine(buf,x,j,x,j,color);
-		DrawLine(buf,x+w-1,j,x+w-1,j,color);
+		DrawPoint(buf,x,j,color);
+		DrawPoint(buf,x+w-1,j,color);
 	}
 }
 
@@ -143,4 +142,5 @@ void FillRect(byte *buf,sword x,sword y,sword w,sword h,byte color) {
 
 #endif
 
-#endif
+#endif
+

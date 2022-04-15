@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <dos.h>
-#include <conio.h>
-#include <string.h>
 
 #define GL2D_IMPLEMENTATION
 #include "gl2d.h"
@@ -17,38 +15,11 @@
 #define BUTTON_IMPLEMENTATION
 #include "button.h"
 
-#define LOW_LIMIT 0.0167f
-#define HIGH_LIMIT 0.1f
-
-Mouse mouse;
-
-float lasttime=0,currenttime=0,deltatime=0;
-
-sword frmSpin=0;
-sword dlySpin=0;
-
-
 static sword show=0;
-
-
 
 void btnOK_OnClick(Button *button) {
 	show=1-show;
 }
-
-void Update(float dt) {
-
-	dlySpin++;
-	if(dlySpin>=10) {
-		dlySpin=0;
-		frmSpin=(frmSpin+1)%4;
-	}
-
-	Mouse_Update(&mouse);
-
-}
-
-
 
 int main(void) {
 
@@ -85,8 +56,12 @@ int main(void) {
 	GBM gbmOK;
 	GBM gbmSpin;
 
+	Mouse mouse;
 	Button btnOK;
 
+	sword frmSpin=0;
+
+	sword delay=0;
 
 	srand(time(NULL));
 
@@ -108,26 +83,16 @@ int main(void) {
 
 	gbmSpin=GBM_Load("spin.gbm");
 
-	lasttime=*myclock;
 
 	while(1) {
-
-		currenttime=*myclock;
-
-		deltatime=(currenttime-lasttime)/1000.0f;
-		if(deltatime<LOW_LIMIT)
-			deltatime=LOW_LIMIT;
-		else if(deltatime>HIGH_LIMIT)
-			deltatime=HIGH_LIMIT;
-
-		lasttime=currenttime;
 
 		if(kbhit()) {
 			key=getch();
 			if(key==0) key=getch()+256;
-			if(key==27) goto terminate;
+			if(key==27) break;
 		}
 
+		Mouse_Update(&mouse);
 
 		Button_HandleEvents(&btnOK,mouse);
 
@@ -141,13 +106,17 @@ int main(void) {
 
 		Button_Draw(dbf,btnOK);
 
-		GBM_Draw(dbf,gbmSpin,frmSpin,8,32);
+		GBM_Draw(dbf,gbmSpin,frmSpin,64,64);
 
 		Mouse_Draw(dbf,mouse);
 
 		memcpy(vga,dbf,SCREEN_SIZE);
 
-		Update(deltatime);
+		delay++;
+		if(delay>=5) {
+			delay=0;
+			frmSpin=(frmSpin+1)%4;
+		}
 
 	}
 
@@ -157,5 +126,4 @@ terminate:
 
 	return 0;
 }
-
 

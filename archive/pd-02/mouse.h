@@ -58,6 +58,7 @@ void Mouse_Update(Mouse *mouse) {
 	if(mouse->y<0) mouse->y=0;
 	if(mouse->x>=SCREEN_WIDTH) mouse->x=SCREEN_WIDTH-1;
 	if(mouse->y>=SCREEN_HEIGHT) mouse->y=SCREEN_HEIGHT-1;
+
 }
 
 void Mouse_GetMotion(sword *dx, sword *dy) {
@@ -96,5 +97,4 @@ sword Mouse_Reset(Mouse *mouse) {
 #endif
 
 #endif
-
 
